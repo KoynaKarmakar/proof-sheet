@@ -1,0 +1,17 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+frontend/.next/
+frontend/out/
+backend/vendor/
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

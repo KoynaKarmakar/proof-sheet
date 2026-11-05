@@ -1,0 +1,467 @@
+{
+ "document_type": "bank_statement",
+ "title": "Bank statement - Demo Co-operative Bank - Sep 2026",
+ "summary": "Current account statement issued by Demo Co-operative Bank Ltd. (Andheri East Branch) for Shree Ganesh Auto Spares Pvt Ltd covering 01-Sep-2026 to 30-Sep-2026.",
+ "issuer": "Demo Co-operative Bank Ltd.",
+ "page_count": 1,
+ "fields": [
+  {
+   "key": "bank_name",
+   "label": "Bank Name",
+   "group": "Account details",
+   "value": "Demo Co-operative Bank Ltd.",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "Demo Co-operative Bank Ltd."
+  },
+  {
+   "key": "branch",
+   "label": "Branch",
+   "group": "Account details",
+   "value": "Andheri East Branch, Mumbai 400069",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "Andheri East Branch, Mumbai 400069"
+  },
+  {
+   "key": "account_holder",
+   "label": "Account Holder",
+   "group": "Account details",
+   "value": "Shree Ganesh Auto Spares Pvt Ltd",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "Shree Ganesh Auto Spares Pvt Ltd"
+  },
+  {
+   "key": "account_number",
+   "label": "Account Number",
+   "group": "Account details",
+   "value": "50200012345678",
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "50200012345678"
+  },
+  {
+   "key": "account_type",
+   "label": "Account Type",
+   "group": "Account details",
+   "value": "Current Account",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "Current Account"
+  },
+  {
+   "key": "ifsc",
+   "label": "IFSC",
+   "group": "Account details",
+   "value": "DEMO0001234",
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "DEMO0001234"
+  },
+  {
+   "key": "micr",
+   "label": "MICR",
+   "group": "Account details",
+   "value": "400999123",
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "low",
+   "source_text": "4OO999123"
+  },
+  {
+   "key": "customer_id",
+   "label": "Customer ID",
+   "group": "Account details",
+   "value": "CUST88231",
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "CUST88231"
+  },
+  {
+   "key": "branch_code",
+   "label": "Branch Code",
+   "group": "Account details",
+   "value": "001234",
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "001234"
+  },
+  {
+   "key": "address",
+   "label": "Address",
+   "group": "Account details",
+   "value": "Shop 12, Sakinaka Road, Mumbai 400072",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "Shop 12, Sakinaka Road, Mumbai 400072"
+  },
+  {
+   "key": "statement_period",
+   "label": "Statement Period",
+   "group": "Statement",
+   "value": "01-Sep-2026 to 30-Sep-2026",
+   "value_type": "date",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "01-Sep-2026 to 30-Sep-2026"
+  },
+  {
+   "key": "currency",
+   "label": "Currency",
+   "group": "Statement",
+   "value": "INR",
+   "value_type": "text",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": "INR"
+  },
+  {
+   "key": "opening_balance",
+   "label": "Opening Balance",
+   "group": "Summary",
+   "value": "4,12,850.75",
+   "value_type": "currency",
+   "currency": "INR",
+   "page": 1,
+   "confidence": "high",
+   "source_text": "4,12,850.75"
+  },
+  {
+   "key": "total_debits",
+   "label": "Total Debits",
+   "group": "Summary",
+   "value": "11,14,177.52",
+   "value_type": "currency",
+   "currency": "INR",
+   "page": 1,
+   "confidence": "high",
+   "source_text": "11,14,177.52"
+  },
+  {
+   "key": "total_credits",
+   "label": "Total Credits",
+   "group": "Summary",
+   "value": "11,34,630.95",
+   "value_type": "currency",
+   "currency": "INR",
+   "page": 1,
+   "confidence": "high",
+   "source_text": "11,34,630.95"
+  },
+  {
+   "key": "closing_balance",
+   "label": "Closing Balance",
+   "group": "Summary",
+   "value": "4,33,304.18",
+   "value_type": "currency",
+   "currency": "INR",
+   "page": 1,
+   "confidence": "high",
+   "source_text": "4,33,304.18"
+  },
+  {
+   "key": "pan",
+   "label": "PAN of Account Holder",
+   "group": "Account details",
+   "value": null,
+   "value_type": "identifier",
+   "currency": null,
+   "page": 1,
+   "confidence": "high",
+   "source_text": null
+  }
+ ],
+ "tables": [
+  {
+   "title": "Transactions",
+   "page": 1,
+   "columns": [
+    "Date",
+    "Narration",
+    "Chq/Ref No.",
+    "Withdrawal (Dr)",
+    "Deposit (Cr)",
+    "Balance"
+   ],
+   "rows": [
+    [
+     "01-09-2026",
+     "OPENING BALANCE",
+     null,
+     null,
+     null,
+     "4,12,850.75"
+    ],
+    [
+     "01-09-2026",
+     "UPI/DR/126225/ELECTRICITY BOARD",
+     "126225",
+     "41,448.02",
+     null,
+     "3,71,402.73"
+    ],
+    [
+     "01-09-2026",
+     "ACH/DR/LOAN EMI/809570",
+     "809570",
+     "88,622.55",
+     null,
+     "2,82,780.18"
+    ],
+    [
+     "03-09-2026",
+     "CASH DEPOSIT/BR001234",
+     "133326",
+     null,
+     "54,351.25",
+     "3,37,131.43"
+    ],
+    [
+     "03-09-2026",
+     "CASH DEPOSIT/BR001234",
+     "688508",
+     null,
+     "1,45,775.50",
+     "4,82,906.93"
+    ],
+    [
+     "05-09-2026",
+     "NEFT/CR/TATA MOTORS LTD/INV-331148",
+     "331148",
+     null,
+     "66,976.43",
+     "5,49,883.36"
+    ],
+    [
+     "06-09-2026",
+     "UPI/CR/832052/RETAIL SALES",
+     "832052",
+     null,
+     "66,908.72",
+     "6,16,792.08"
+    ],
+    [
+     "07-09-2026",
+     "RTGS/CR/MAHINDRA LOGISTICS/207175",
+     "207175",
+     null,
+     "28,503.87",
+     "6,45,295.95"
+    ],
+    [
+     "08-09-2026",
+     "NEFT/CR/TATA MOTORS LTD/INV-946335",
+     "946335",
+     null,
+     "1,05,398.07",
+     "7,50,694.02"
+    ],
+    [
+     "10-09-2026",
+     "ACH/DR/LOAN EMI/182627",
+     "182627",
+     "1,33,216.53",
+     null,
+     "6,17,477.49"
+    ],
+    [
+     "11-09-2026",
+     "UPI/CR/705397/RETAIL SALES",
+     "705397",
+     null,
+     "22,745.69",
+     "6,40,223.18"
+    ],
+    [
+     "12-09-2026",
+     "RTGS/DR/MINDA INDUSTRIES/183667",
+     "183667",
+     "1,39,037.94",
+     null,
+     "5,01,185.24"
+    ],
+    [
+     "13-09-2026",
+     "CHQ PAID/575435/SALARY",
+     "575435",
+     "60,278.65",
+     null,
+     "4,40,906.59"
+    ],
+    [
+     "14-09-2026",
+     "GST PAYMENT/CBIC/319684",
+     "319684",
+     "1,13,185.79",
+     null,
+     "3,27,720.80"
+    ],
+    [
+     "14-09-2026",
+     "UPI/DR/738720/ELECTRICITY BOARD",
+     "738720",
+     "86,859.96",
+     null,
+     "2,40,860.84"
+    ],
+    [
+     "15-09-2026",
+     "CASH DEPOSIT/BR001234",
+     "584714",
+     null,
+     "2,17,778.95",
+     "4,58,639.79"
+    ],
+    [
+     "16-09-2026",
+     "NEFT/CR/TATA MOTORS LTD/INV-817870",
+     "817870",
+     null,
+     "1,70,882.48",
+     "6,29,522.27"
+    ],
+    [
+     "17-09-2026",
+     "RTGS/CR/MAHINDRA LOGISTICS/961722",
+     "961722",
+     null,
+     "74,876.05",
+     "7,04,398.32"
+    ],
+    [
+     "17-09-2026",
+     "GST PAYMENT/CBIC/321231",
+     "321231",
+     "92,047.27",
+     null,
+     "6,12,351.05"
+    ],
+    [
+     "18-09-2026",
+     "GST PAYMENT/CBIC/322955",
+     "322955",
+     "65,114.21",
+     null,
+     "5,47,236.84"
+    ],
+    [
+     "20-09-2026",
+     "CASH DEPOSIT/BR001234",
+     "249811",
+     null,
+     "60,285.03",
+     "6,07,521.87"
+    ],
+    [
+     "21-09-2026",
+     "RTGS/DR/MINDA INDUSTRIES/883300",
+     "883300",
+     "1,43,958.19",
+     null,
+     "4,63,563.68"
+    ],
+    [
+     "22-09-2026",
+     "RTGS/DR/MINDA INDUSTRIES/329974",
+     "329974",
+     "24,718.08",
+     null,
+     "4,38,845.60"
+    ],
+    [
+     "22-09-2026",
+     "UPI/CR/892495/RETAIL SALES",
+     "892495",
+     null,
+     "31,245.62",
+     "4,70,091.22"
+    ],
+    [
+     "24-09-2026",
+     "IMPS/CR/725380/SHARMA TRADERS",
+     "725380",
+     null,
+     "88,903.29",
+     "5,58,994.51"
+    ],
+    [
+     "25-09-2026",
+     "GST PAYMENT/CBIC/680099",
+     "680099",
+     "4,802.52",
+     null,
+     "5,54,191.99"
+    ],
+    [
+     "25-09-2026",
+     "GST PAYMENT/CBIC/814825",
+     "814825",
+     "1,20,887.81",
+     null,
+     "4,33,304.18"
+    ]
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "heading": "Demo Co-operative Bank Ltd.",
+   "body_markdown": "Andheri East Branch, Mumbai 400069\n\n**Statement of Account**"
+  },
+  {
+   "heading": "Account details",
+   "body_markdown": "- **Account holder:** Shree Ganesh Auto Spares Pvt Ltd\n- **Account no.:** 50200012345678 (Current Account)\n- **IFSC:** DEMO0001234 · **MICR:** 400999123\n- **Customer ID:** CUST88231 · **Branch code:** 001234\n- **Address:** Shop 12, Sakinaka Road, Mumbai 400072\n- **Period:** 01-Sep-2026 to 30-Sep-2026 · **Currency:** INR"
+  },
+  {
+   "heading": "Transactions",
+   "body_markdown": "(see table: Transactions)"
+  },
+  {
+   "heading": "Account summary",
+   "body_markdown": "- Opening balance: 4,12,850.75\n- Total debits: 11,14,177.52\n- Total credits: 11,34,630.95\n- Closing balance: 4,33,304.18"
+  },
+  {
+   "heading": "Notes",
+   "body_markdown": "This is a computer generated statement and does not require a signature. Please report discrepancies within 15 days of receipt."
+  }
+ ],
+ "flags": [
+  {
+   "severity": "warning",
+   "field": "MICR",
+   "message": "MICR digits are faint; the second and third characters could be read as 'O' or '0'."
+  },
+  {
+   "severity": "info",
+   "field": "PAN of Account Holder",
+   "message": "PAN is not printed on this statement."
+  },
+  {
+   "severity": "warning",
+   "field": null,
+   "message": "Footer reads 'SYNTHETIC SAMPLE - NOT A REAL DOCUMENT' - treat as a demo document."
+  }
+ ]
+}
