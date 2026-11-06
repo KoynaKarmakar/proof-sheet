@@ -42,6 +42,12 @@ final class PdfTools
         return (int) $m[1];
     }
 
+    /** Every word with its position (XHTML), for TableExtractor. Fast: ~0.05 s for 14 pages. */
+    public function bboxXml(): string
+    {
+        return (string) shell_exec('pdftotext -bbox-layout -enc UTF-8 ' . escapeshellarg($this->pdf) . ' - 2>/dev/null');
+    }
+
     /** Printed text of one page, keeping the visual column layout. */
     public function pageText(int $page): string
     {

@@ -28,6 +28,9 @@ final class GroqExtractor
     private array $models = [];
     /** @var list<array> */
     private array $extraFlags = [];
+    /** Tables read straight from the PDF text layer by TableExtractor (no AI). */
+    private array $parserTables = [];
+    private int $parserRows = 0;
 
     /** @return array{extraction: array, meta: array} */
     /** @param ?callable(int $done, int $total): void $onProgress called as each batch of pages finishes */
@@ -38,6 +41,10 @@ final class GroqExtractor
             : [['kind' => 'images', 'pages' => [1], 'images' => [[$mime, $bytes]]]];
         $pageCount ??= 1;
 
+        if ($chunks === [] && $this->parserTables !== []) {
+            // Everything on the pages was table rows: no AI call needed at all.
+            $chunks = [];
+        }
         $parts = [];
         $total = count($chunks);
         if ($onProgress) { $onProgress(0, $total); }
@@ -48,12 +55,21 @@ final class GroqExtractor
             }
             if ($onProgress) { $onProgress($i + 1, $total); }
         }
-        if ($parts === []) {
+        if ($parts === [] && $this->parserTables === []) {
             throw new HttpException(502, 'The model did not return a structured extraction for any page');
         }
 
         $merged = self::merge($parts);
         $merged['page_count'] = $pageCount;
+        if ($this->parserTables !== []) {
+            $merged['tables'] = array_merge($this->parserTables, $merged['tables']);
+            if ($merged['document_type'] === 'other' && preg_grep('/balance/i', $this->parserTables[0]['columns'])) {
+                $merged['document_type'] = 'bank_statement';
+            }
+            $merged['flags'][] = ['severity' => 'info', 'field' => null, 'message' => sprintf(
+                '%d table row%s read directly from the PDF text (exact characters, no AI).', $this->parserRows, $this->parserRows === 1 ? ' was' : 's were')];
+            $this->models[] = 'table-parser';
+        }
         array_push($merged['flags'], ...$this->extraFlags);
 
         return [
@@ -84,11 +100,29 @@ final class GroqExtractor
         $imagesPerRequest = max(1, min(3, (int) Env::get('GROQ_IMAGES_PER_REQUEST', '1')));
         $dpi = (int) Env::get('GROQ_IMAGE_DPI', '150');
 
+        // Tables first, without AI. When it finds real tables, the AI only reads what's left
+        // on each page (account details, summaries), which is a fraction of the text.
+        $residual = null;
+        if (Env::bool('TABLE_PARSER', true)) {
+            $tx = TableExtractor::fromBboxXml($pdf->bboxXml());
+            if ($tx['rows'] >= 3) {
+                $this->parserTables = $tx['tables'];
+                $this->parserRows = $tx['rows'];
+                $residual = $tx['residual'];
+            }
+        }
+
         $chunks = [];
         $cur = null;
         for ($p = 1; $p <= $pageCount; $p++) {
             $text = $pdf->pageText($p);
             $isText = mb_strlen(preg_replace('/\s+/', '', $text) ?? '') >= self::MIN_TEXT_CHARS;
+            if ($isText && $residual !== null) {
+                $text = $residual[$p] ?? '';
+                if (trim($text) === '') {
+                    continue; // page was only table rows
+                }
+            }
             $cost = self::estimateTokens($text);
 
             $fits = $cur !== null && (
@@ -128,6 +162,14 @@ final class GroqExtractor
               . "may be printed on other pages. If a table continues from or onto another page, keep the same table title "
               . "and the printed column headers, and do not repeat the header row as a data row.\n"
             : "This is the whole document ($pageCount page" . ($pageCount > 1 ? 's' : '') . ").\n";
+        if ($this->parserTables !== [] && $chunk['kind'] === 'text') {
+            $titles = implode(', ', array_unique(array_column($this->parserTables, 'title')));
+            $intro .= "The main table ($titles, {$this->parserRows} rows) was already read exactly by a parser and "
+                . "its rows are removed from the text below. Do NOT recreate it or copy any of its rows. Extract the "
+                . "fields (account/party details, period, opening/closing balances, printed totals), any other small "
+                . "table still in the text, short sections, and flags. In sections write \"(see table: $titles)\" "
+                . "where that table sits.\n";
+        }
         $intro .= 'Extract it following the rules and return the JSON object.';
 
         if ($chunk['kind'] === 'text') {

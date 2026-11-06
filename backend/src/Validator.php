@@ -109,9 +109,16 @@ final class Validator
         }
 
         // ------------------------------------------------- arithmetic checks
-        foreach ($tables as $t) {
+        foreach ($tables as &$t) {
+            $moved = self::repairSwappedAmounts($t);
+            if ($moved) {
+                $flags[] = self::flag('warning', $t['title'], sprintf(
+                    'Moved %d amount(s) between Debit and Credit so the running balance adds up (rows %s). Compare these rows with the original.',
+                    count($moved), implode(', ', array_slice($moved, 0, 8)) . (count($moved) > 8 ? ', ...' : '')));
+            }
             array_push($flags, ...self::checkRunningBalance($t, $fields));
         }
+        unset($t);
         array_push($flags, ...self::checkInvoiceTotal($fields));
 
         $sections = [];
@@ -143,21 +150,79 @@ final class Validator
 
     // ------------------------------------------------------------- checks
 
-    /** Row-by-row: previous balance + credit - debit must equal printed balance. */
-    private static function checkRunningBalance(array $t, array $fields): array
+    /**
+     * Fix amounts that landed in the wrong one of Debit / Credit. A row is only changed when it does not
+     * reconcile as read and does reconcile exactly once the amount is moved, using the printed balances
+     * on either side, so a correct row is never touched. Returns the 1-based rows that were changed.
+     */
+    private static function repairSwappedAmounts(array &$t): array
     {
         $dr = $cr = $bal = null;
         foreach ($t['columns'] as $i => $c) {
             $lc = strtolower($c);
+            $hasDr = (bool) preg_match('/debit|withdraw|\bdr\b|paid out/', $lc);
+            $hasCr = (bool) preg_match('/credit|deposit|\bcr\b|paid in/', $lc);
             if ($bal === null && str_contains($lc, 'balance')) {
                 $bal = $i;
-            } elseif ($dr === null && preg_match('/debit|withdraw|\bdr\b|paid out/', $lc)) {
+            } elseif ($hasDr && $hasCr) {
+                return [];                       // typed layout: nothing to swap
+            } elseif ($dr === null && $hasDr) {
                 $dr = $i;
-            } elseif ($cr === null && preg_match('/credit|deposit|\bcr\b|paid in/', $lc)) {
+            } elseif ($cr === null && $hasCr) {
                 $cr = $i;
             }
         }
         if ($dr === null || $cr === null || $bal === null) {
+            return [];
+        }
+        $moved = [];
+        $prev = null;
+        foreach ($t['rows'] as $n => &$r) {
+            $b = self::parseNumber($r[$bal] ?? null);
+            if ($b === null) {
+                continue;
+            }
+            $d = self::parseNumber($r[$dr] ?? null);
+            $c = self::parseNumber($r[$cr] ?? null);
+            if ($prev !== null && (($d === null) xor ($c === null))) {
+                $amount = abs($d ?? $c);
+                $asRead = $prev + ($c === null ? -$amount : $amount);
+                $swapped = $prev + ($c === null ? $amount : -$amount);
+                if (abs($asRead - $b) > self::TOL && abs($swapped - $b) <= self::TOL) {
+                    [$r[$dr], $r[$cr]] = [$r[$cr], $r[$dr]];
+                    $moved[] = $n + 1;
+                }
+            }
+            $prev = $b;
+        }
+        unset($r);
+        return $moved;
+    }
+
+    /** Row-by-row: previous balance + credit - debit must equal printed balance. */
+    private static function checkRunningBalance(array $t, array $fields): array
+    {
+        // Two layouts: separate Debit / Credit columns, or one Amount column plus a DR/CR column.
+        $dr = $cr = $bal = $amt = $type = null;
+        foreach ($t['columns'] as $i => $c) {
+            $lc = strtolower($c);
+            $hasDr = (bool) preg_match('/debit|withdraw|\bdr\b|paid out/', $lc);
+            $hasCr = (bool) preg_match('/credit|deposit|\bcr\b|paid in/', $lc);
+            if ($bal === null && str_contains($lc, 'balance')) {
+                $bal = $i;
+            } elseif ($type === null && (($hasDr && $hasCr) || preg_match('/\btype\b|dr\s*\/\s*cr|cr\s*\/\s*dr/', $lc))) {
+                $type = $i;
+            } elseif ($amt === null && preg_match('/amount|\bamt\b/', $lc) && !$hasDr && !$hasCr) {
+                $amt = $i;
+            } elseif ($dr === null && $hasDr) {
+                $dr = $i;
+            } elseif ($cr === null && $hasCr) {
+                $cr = $i;
+            }
+        }
+        $split = $dr !== null && $cr !== null;
+        $typed = !$split && $amt !== null && $type !== null;
+        if ($bal === null || (!$split && !$typed)) {
             return [];
         }
 
@@ -168,16 +233,25 @@ final class Validator
         $sumDr = $sumCr = 0.0;
         foreach ($t['rows'] as $n => $r) {
             $b = self::parseNumber($r[$bal] ?? null);
-            $d = self::parseNumber($r[$dr] ?? null) ?? 0.0;
-            $c = self::parseNumber($r[$cr] ?? null) ?? 0.0;
-            $sumDr += abs($d);
-            $sumCr += abs($c);
+            if ($split) {
+                $d = abs(self::parseNumber($r[$dr] ?? null) ?? 0.0);
+                $c = abs(self::parseNumber($r[$cr] ?? null) ?? 0.0);
+            } else {
+                $a = abs(self::parseNumber($r[$amt] ?? null) ?? 0.0);
+                $kind = strtoupper((string) ($r[$type] ?? ''));
+                $isCr = preg_match('/\bCR\b|CREDIT|DEPOSIT/', $kind) === 1;
+                $isDr = preg_match('/\bDR\b|DEBIT|WITHDRAW/', $kind) === 1;
+                $d = $isDr ? $a : 0.0;
+                $c = $isCr ? $a : 0.0;
+            }
+            $sumDr += $d;
+            $sumCr += $c;
             if ($b === null) {
                 continue;
             }
             if ($prev !== null && ($d != 0.0 || $c != 0.0)) {
                 $checked++;
-                $expected = $prev + abs($c) - abs($d);
+                $expected = $prev + $c - $d;
                 if (abs($expected - $b) > self::TOL) {
                     $mismatch[] = $n + 1;
                 }
